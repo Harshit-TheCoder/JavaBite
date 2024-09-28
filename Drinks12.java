@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Locale;
@@ -11,6 +12,7 @@ import javax.swing.*;
 
 class Drinks12 extends JFrame implements ActionListener {
     private ResourceBundle bundle;
+    Font notoFont;
     class BackgroundPanel extends JPanel {
         private Image backgroundImage;
     
@@ -27,8 +29,8 @@ class Drinks12 extends JFrame implements ActionListener {
         }
     }
 
-    String itemsPath = "OrderFood.txt";
-
+    String itemsPath = "OrderJuice.txt";
+    String globalfont;
     String[] list = {"SMALL", "MEDIUM", "LARGE"};
     String[] languages = {"English", "Hindi", "Marathi", "Tamizh", "Telugu", "Kannada", "Malayalam"};
     String[] juices;
@@ -39,7 +41,7 @@ class Drinks12 extends JFrame implements ActionListener {
     JLabel[] imageLabels;
     JComboBox<String> JLanguage = new JComboBox<>(languages);
     JButton pizza, burger, bill, BILL;
-    Drinks12() {
+    Drinks12() throws IOException {
         this.setTitle("JUICE CORNER");
         this.setSize(1200, 2500);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,6 +71,27 @@ class Drinks12 extends JFrame implements ActionListener {
 
         Locale defaultLocale = Locale.of("en", "US");
         this.bundle = ResourceBundle.getBundle("Messages", defaultLocale);
+        this.bundle = ResourceBundle.getBundle("Messages", defaultLocale);
+
+        try {
+            String font = "Fonts\\"+this.bundle.getString("font_path");
+            globalfont=font;
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(itemsPath, true))) {
+                // writer.write("Order Summary:");
+                writer.write(font);
+                writer.newLine();
+            }
+            catch(Exception e){
+                System.err.println(e);
+            }
+            // String font = "Fonts\\NotoSansMalayalam-VariableFont_wdth,wght.ttf";
+            notoFont = Font.createFont(Font.TRUETYPE_FONT, new File(font)).deriveFont(15f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(notoFont);
+        } catch (FontFormatException e) {
+            notoFont = new Font("Sanserif", Font.PLAIN, 15);
+        }
+        
         list = this.bundle.getString("list").split(",");
         juices = this.bundle.getString("juices").split(",");
 
@@ -89,7 +112,7 @@ class Drinks12 extends JFrame implements ActionListener {
             juiceButtons[i] = new JRadioButton(juices[i]);
             juiceButtons[i].setBounds(20, yPosition, 200, 50);
             juiceButtons[i].setForeground(Color.red);
-            juiceButtons[i].setFont(new Font("Algerian", Font.PLAIN, 15));
+            juiceButtons[i].setFont(notoFont);
             juiceButtons[i].setFocusable(false);
             panel.add(juiceButtons[i]);
 
@@ -104,6 +127,7 @@ class Drinks12 extends JFrame implements ActionListener {
 
             sizeCombos[i] = new JComboBox<>(list);
             sizeCombos[i].setBounds(750, yPosition, 100, 50);
+            sizeCombos[i].setFont(notoFont);
             sizeCombos[i].addActionListener(this);
             panel.add(sizeCombos[i]);
 
@@ -181,7 +205,9 @@ class Drinks12 extends JFrame implements ActionListener {
         juices = this.bundle.getString("juices").split(",");
         // Update UI components with new language content
         for (int i = 0; i < juices.length; i++) {
+            juiceButtons[i].setFont(notoFont);
             juiceButtons[i].setText(juices[i]);
+            sizeCombos[i].setFont(notoFont);
             sizeCombos[i].setModel(new DefaultComboBoxModel<>(list));
         }
         
@@ -204,19 +230,47 @@ class Drinks12 extends JFrame implements ActionListener {
 
         // Load the appropriate resource bundle
             this.bundle = ResourceBundle.getBundle("Messages", locale);
+            try {
+                String font = "Fonts\\"+this.bundle.getString("font_path");
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(itemsPath))) {
+                    // writer.write("Order Summary:");
+                    writer.write(font);
+                    writer.newLine();
+                }
+                catch(Exception ett){
+                    System.err.println(ett);
+                }
+                notoFont = Font.createFont(Font.TRUETYPE_FONT, new File(font)).deriveFont(15f);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                ge.registerFont(notoFont);
+            } catch (FontFormatException et) {
+                notoFont = new Font("Sanserif", Font.PLAIN, 15);
+            } catch (IOException ex) {
+            }
             updateLanguageContent();
         }
 
         if (e.getSource() == pizza) {
             this.dispose();
-            new Pizzas12(); // Assuming a Pizza class exists
+            try {
+                new Pizzas12(); // Assuming a Pizza class exists
+            } catch (IOException ex) {
+            }
         }
         if (e.getSource() == burger) {
             this.dispose();
-            new Burger12(); // Assuming Drinks12 is the class for drinks
+            try {
+                new Burger12(); // Assuming a Pizza class exists
+            } catch (FontFormatException ex) {
+            }
+             // Assuming Drinks12 is the class for drinks
         }
         if(e.getSource() == BILL){
-            bill b = new bill();
+            try {
+                bill b = new bill();
+                //b.setJuiceFont(globalfont);
+            } catch (IOException ex) {
+            }
         }
         if (e.getSource() == bill) {
             // Code for generating the bill
@@ -277,7 +331,7 @@ class Drinks12 extends JFrame implements ActionListener {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Drinks12 d = new Drinks12();
     }
 }

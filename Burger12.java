@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Locale;
@@ -10,6 +11,7 @@ import javax.swing.*;
 
 class Burger12 extends JFrame implements ActionListener {
     private ResourceBundle bundle;
+    Font notoFont;
     class BackgroundPanel extends JPanel {
         private Image backgroundImage;
     
@@ -26,12 +28,12 @@ class Burger12 extends JFrame implements ActionListener {
         }
     }
 
-
-    String itemsPath = "OrderFood.txt";
+    String globalfont;
+    String itemsPath = "OrderBurger.txt";
     String[] languages = {"English", "Hindi", "Marathi", "Tamizh", "Telugu", "Kannada", "Malayalam"};
-    String[] burgerNames = {"VEG MAKHANI BURST", "CRISPY VEG BURGER", "VEG WHOPPER", 
-                            "HOT 'N' CHEESY BURGER", "BK VEGGIE BURGER", "CRISPY VEG TACO", 
-                            "BK CHICKEN DOUBLE PATTY BURGER", "BK CHICKEN BURGER WITH CHEESE"};
+    // String[] burgerNames = {"VEG MAKHANI BURST", "CRISPY VEG BURGER", "VEG WHOPPER", 
+    //                         "HOT N CHEESY BURGER", "BK VEGGIE BURGER", "CRISPY VEG TACO", 
+    //                         "BK CHICKEN DOUBLE PATTY BURGER", "BK CHICKEN BURGER WITH CHEESE"};
     // String[] burgerDescriptions = {"Veg patty, fresh onion and signature makhani sauce.",
     //                                "Bk veg patty, green lettuce, tomato, cheese slice, signature sauce.",
     //                                "Chilli Cheese patty, spicy sauce, soft square masala buns. It's cheesy and spicy.",
@@ -46,7 +48,7 @@ class Burger12 extends JFrame implements ActionListener {
     String[] imagePaths = {"Images\\makhaniburst.jpg", "Images\\crispy veg.jpg", "Images\\veg whopper.jpg", 
                            "Images\\hotncheesy.jpg", "Images\\bkveggie.jpg", "Images\\taco.jpg", 
                            "Images\\doublechickenpatty.jpg", "Images\\chickencheese.jpg"};
-    
+    String[] burgerNames;
     JRadioButton[] burgerButtons;
     JLabel[] burgerDescriptionsLabels;
     JLabel[] burgerPricesLabels;
@@ -56,7 +58,29 @@ class Burger12 extends JFrame implements ActionListener {
     JComboBox<String> JLanguage = new JComboBox<>(languages);
     JButton pizza, drinks, bill, BILL;
     
-    Burger12() {
+    Burger12() throws FontFormatException {
+        Locale defaultLocale = Locale.of("en", "US");
+        this.bundle = ResourceBundle.getBundle("Messages", defaultLocale);
+
+        try {
+            String font = "Fonts\\"+this.bundle.getString("font_path");
+            // String font = "Fonts\\NotoSansMalayalam-VariableFont_wdth,wght.ttf";
+            globalfont=font;
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(itemsPath, true))) {
+                // writer.write("Order Summary:");
+                writer.write(font);
+                writer.newLine();
+            }
+            catch(Exception e){
+                System.err.println(e);
+            }
+            notoFont = Font.createFont(Font.TRUETYPE_FONT, new File(font)).deriveFont(15f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(notoFont);
+        } catch (IOException e) {
+            notoFont = new Font("Sanserif", Font.PLAIN, 15);
+        }
+        
         this.setTitle("BURGERS!!!");
         this.setSize(1200, 2000);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -68,8 +92,9 @@ class Burger12 extends JFrame implements ActionListener {
         panel.setLayout(null);
         panel.setPreferredSize(new Dimension(1200, 2000));
 
-        Locale defaultLocale = Locale.of("en", "US");
-        this.bundle = ResourceBundle.getBundle("Messages", defaultLocale);
+        // Locale defaultLocale = Locale.of("en", "US");
+        burgerNames = this.bundle.getString("burgerNames").split(",");
+        // this.bundle = ResourceBundle.getBundle("Messages", defaultLocale);
         burgerDescriptions = this.bundle.getString("burgerDescriptions").split(",");
 
         burgerButtons = new JRadioButton[burgerNames.length];
@@ -84,7 +109,7 @@ class Burger12 extends JFrame implements ActionListener {
             burgerButtons[i] = new JRadioButton(burgerNames[i]);
             burgerButtons[i].setBounds(20, yPosition, 300, 50);
             burgerButtons[i].setForeground(Color.red);
-            burgerButtons[i].setFont(new Font("Algerian", Font.PLAIN, 15));
+            burgerButtons[i].setFont(notoFont);
             burgerButtons[i].setFocusable(false);
             burgerButtons[i].addActionListener(this);
             panel.add(burgerButtons[i]);
@@ -92,7 +117,7 @@ class Burger12 extends JFrame implements ActionListener {
             burgerDescriptionsLabels[i] = new JLabel(burgerDescriptions[i]);
             burgerDescriptionsLabels[i].setBounds(30, yPosition + 50, 500, 50);
             burgerDescriptionsLabels[i].setForeground(new Color(25, 25, 112));
-            burgerDescriptionsLabels[i].setFont(new Font("Arial", Font.BOLD, 12));
+            burgerDescriptionsLabels[i].setFont(notoFont);
             panel.add(burgerDescriptionsLabels[i]);
 
             ImageIcon imageIcon = new ImageIcon(imagePaths[i]);
@@ -104,14 +129,14 @@ class Burger12 extends JFrame implements ActionListener {
             burgerPricesLabels[i] = new JLabel(burgerPrices[i]);
             burgerPricesLabels[i].setBounds(600, yPosition + 100, 100, 50);
             burgerPricesLabels[i].setForeground(new Color(25, 25, 112));
-            burgerPricesLabels[i].setFont(new Font("Arial", Font.BOLD, 12));
+            burgerPricesLabels[i].setFont(new Font("Noto Sans", Font.BOLD, 12));
             panel.add(burgerPricesLabels[i]);
 
             burgerQuantityFields[i] = new JTextField();
             burgerQuantityFields[i].setBounds(900, yPosition, 150, 50);
             burgerQuantityFields[i].addActionListener(this);
             burgerQuantityFields[i].setForeground(new Color(128, 0, 128));
-            burgerQuantityFields[i].setFont(new Font("Arial", Font.BOLD, 16));
+            burgerQuantityFields[i].setFont(notoFont);
             burgerQuantityFields[i].setHorizontalAlignment(JTextField.CENTER);
             panel.add(burgerQuantityFields[i]);
 
@@ -192,7 +217,7 @@ class Burger12 extends JFrame implements ActionListener {
         //     pizzaImages = new JLabel[pizzaNames.length];
         //     return; // Early exit to prevent NullPointerException
         // }// Ensure that the length of arrays matches
-        
+        burgerNames = this.bundle.getString("burgerNames").split(",");
         burgerDescriptions = this.bundle.getString("burgerDescriptions").split(",");
         if (burgerNames.length != burgerDescriptions.length) {
             JOptionPane.showMessageDialog(this, "Mismatch between burger names and descriptions.");
@@ -200,6 +225,9 @@ class Burger12 extends JFrame implements ActionListener {
         }
         // Update UI components with new language content
         for (int i = 0; i < burgerNames.length; i++) {
+            burgerButtons[i].setFont(notoFont);
+            burgerButtons[i].setText(burgerNames[i]);
+            burgerDescriptionsLabels[i].setFont(notoFont);
             burgerDescriptionsLabels[i].setText(burgerDescriptions[i]);
         }
     }
@@ -222,19 +250,46 @@ class Burger12 extends JFrame implements ActionListener {
 
         // Load the appropriate resource bundle
             this.bundle = ResourceBundle.getBundle("Messages", locale);
+            try {
+                String font = "Fonts\\"+this.bundle.getString("font_path");
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(itemsPath))) {
+                    // writer.write("Order Summary:");
+                    writer.write(font);
+                    writer.newLine();
+                }
+                catch(Exception et){
+                    System.err.println(et);
+                }
+                notoFont = Font.createFont(Font.TRUETYPE_FONT, new File(font)).deriveFont(15f);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                ge.registerFont(notoFont);
+            } catch (FontFormatException et) {
+                notoFont = new Font("Sanserif", Font.PLAIN, 15);
+            } catch (IOException ex) {
+            }
             updateLanguageContent();
         }
         
         if (e.getSource() == pizza) {
-            this.dispose();
-            new Pizzas12(); // Assuming a Pizza class exists
+            try {
+                this.dispose();
+                new Pizzas12(); // Assuming a Pizza class exists
+            } catch (IOException ex) {
+            }
         }
         if (e.getSource() == drinks) {
             this.dispose();
-            new Drinks12(); // Assuming Drinks12 is the class for drinks
+            try {
+                new Drinks12(); // Assuming Drinks12 is the class for drinks
+            } catch (IOException ex) {
+            }
         }
         if(e.getSource() == BILL){
-            bill b = new bill();
+            try {
+                bill b = new bill();
+                //b.setBurgerFont(globalfont);
+            } catch (IOException ex) {
+            }
         }
         if (e.getSource() == bill) {
             // Code for generating the bill can be added here
@@ -281,7 +336,7 @@ class Burger12 extends JFrame implements ActionListener {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FontFormatException {
         Burger12 b = new Burger12();
     }
 }

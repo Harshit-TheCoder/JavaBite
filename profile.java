@@ -89,8 +89,7 @@ class profile extends JFrame implements ActionListener{
 
     l = new JLabel();
     l.setSize(800,700);
-    l.setBackground(Color.PINK);
-    l.setOpaque(true);
+    
    
     l.add(name);
     l.add(address);
@@ -143,15 +142,24 @@ public void actionPerformed(ActionEvent e) {
 
     if(e.getSource()==burger){
         this.dispose();
-        Burger12 b = new Burger12();
+        try {
+            Burger12 b = new Burger12();
+        } catch (FontFormatException ex) {
+        }
     }
     if(e.getSource()==pizzazzzz){
         this.dispose();
-        Pizzas12 p = new Pizzas12();
+        try {
+            Pizzas12 p = new Pizzas12();
+        } catch (IOException ex) {
+        }
     }
     if(e.getSource()==drinks){
-        this.dispose();
-        Drinks12 d = new Drinks12();
+        try {
+            this.dispose();
+            Drinks12 d = new Drinks12();
+        } catch (IOException ex) {
+        }
     }
     
    

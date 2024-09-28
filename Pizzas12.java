@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Locale;
@@ -12,7 +13,7 @@ import javax.swing.*;
 class Pizzas12 extends JFrame implements ActionListener {
 
     private ResourceBundle bundle;
-
+    Font notoFont;
     class BackgroundPanel extends JPanel {
         private Image backgroundImage;
     
@@ -29,7 +30,7 @@ class Pizzas12 extends JFrame implements ActionListener {
         }
     }
 
-    String itemsPath = "OrderFood.txt";
+    String itemsPath = "OrderPizza.txt";
     
     // String[] pizzaNames = {"ONION PIZZA MANIA", "CAPSICUM PIZZA MANIA", "PANEER PIZZA MANIA", 
     //                        "CORN PIZZA MANIA", "CHICKEN PIZZA MANIA", "FARMHOUSE PIZZA MANIA", 
@@ -43,6 +44,7 @@ class Pizzas12 extends JFrame implements ActionListener {
     //                               "Delightful combination of onion capsicum tomato and grilled mushroom.", 
     //                               "A classic pizza topped with sprinkle of basil and parsley herbs", 
     //                               "Classic delight with 100% real mozzarella cheese"};
+    String globalfont;
     String[] pizzaNames;
     String[] pizzaDescriptions;
     String[] pizzaPrices = {"69", "89", "89", "79", "199", "259", "89", "159"};
@@ -61,7 +63,32 @@ class Pizzas12 extends JFrame implements ActionListener {
 
     JButton burger, drinks, bill, BILL;
     
-    Pizzas12() {
+    Pizzas12() throws IOException {
+
+        Locale defaultLocale = Locale.of("en", "US");
+        this.bundle = ResourceBundle.getBundle("Messages", defaultLocale);
+        
+        try {
+            String font = "Fonts\\"+this.bundle.getString("font_path");
+            globalfont = font;
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(itemsPath, true))) {
+                // writer.write("Order Summary:");
+                writer.write(font);
+                writer.newLine();
+            }
+            catch(Exception e){
+                System.err.println(e);
+            }
+            // String font = "Fonts\\NotoSansMalayalam-VariableFont_wdth,wght.ttf";
+            notoFont = Font.createFont(Font.TRUETYPE_FONT, new File(font)).deriveFont(15f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(notoFont);
+        } catch (FontFormatException e) {
+            notoFont = new Font("Sanserif", Font.PLAIN, 15);
+        }
+
+        
+        
         this.setTitle("PIZZAAAA!!!");
         this.setSize(1200, 2000);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -73,8 +100,8 @@ class Pizzas12 extends JFrame implements ActionListener {
         panel.setLayout(null);
         panel.setPreferredSize(new Dimension(1200, 2000));
 
-        Locale defaultLocale = Locale.of("en", "US");
-        this.bundle = ResourceBundle.getBundle("Messages", defaultLocale);
+        
+
         pizzaNames = this.bundle.getString("pizzaNames").split(",");
         pizzaDescriptions = this.bundle.getString("pizzaDescriptions").split(",");
 
@@ -90,7 +117,7 @@ class Pizzas12 extends JFrame implements ActionListener {
             pizzaButtons[i] = new JRadioButton(pizzaNames[i]);
             pizzaButtons[i].setBounds(20, yPosition, 250, 50);
             pizzaButtons[i].setForeground(Color.red);
-            pizzaButtons[i].setFont(new Font("Algerian", Font.PLAIN, 15));
+            pizzaButtons[i].setFont(notoFont);
             pizzaButtons[i].setFocusable(false);
             pizzaButtons[i].addActionListener(this);
             panel.add(pizzaButtons[i]);
@@ -98,7 +125,8 @@ class Pizzas12 extends JFrame implements ActionListener {
             pizzaDescriptionsLabels[i] = new JLabel(pizzaDescriptions[i]);
             pizzaDescriptionsLabels[i].setBounds(30, yPosition + 50, 500, 50);
             pizzaDescriptionsLabels[i].setForeground(new Color(75, 0, 130));
-            pizzaDescriptionsLabels[i].setFont(new Font("Noto Sans", Font.BOLD, 12));
+            // pizzaDescriptionsLabels[i].setFont(new Font("Noto Sans", Font.BOLD, 12));
+            pizzaDescriptionsLabels[i].setFont(notoFont);
             panel.add(pizzaDescriptionsLabels[i]);
 
             ImageIcon imageIcon = new ImageIcon(imagePaths[i]);
@@ -111,13 +139,15 @@ class Pizzas12 extends JFrame implements ActionListener {
             pizzaPricesLabels[i].setBounds(600, yPosition + 100, 100, 50);
             pizzaPricesLabels[i].setForeground(new Color(75, 0, 130));
             pizzaPricesLabels[i].setFont(new Font("Noto Sans", Font.BOLD, 12));
+            // pizzaPricesLabels[i].setFont(notoFont);
             panel.add(pizzaPricesLabels[i]);
 
             pizzaQuantityFields[i] = new JTextField();
             pizzaQuantityFields[i].setBounds(900, yPosition, 150, 50);
             pizzaQuantityFields[i].addActionListener(this);
             pizzaQuantityFields[i].setForeground(new Color(128, 0, 128));
-            pizzaQuantityFields[i].setFont(new Font("Noto Sans", Font.BOLD, 16));
+            // pizzaQuantityFields[i].setFont(new Font("Noto Sans", Font.BOLD, 16));
+            pizzaQuantityFields[i].setFont(notoFont);
             pizzaQuantityFields[i].setHorizontalAlignment(JTextField.CENTER);
             panel.add(pizzaQuantityFields[i]);
 
@@ -205,7 +235,9 @@ class Pizzas12 extends JFrame implements ActionListener {
         }
         // Update UI components with new language content
         for (int i = 0; i < pizzaNames.length; i++) {
+            pizzaButtons[i].setFont(notoFont);
             pizzaButtons[i].setText(pizzaNames[i]);
+            pizzaDescriptionsLabels[i].setFont(notoFont);
             pizzaDescriptionsLabels[i].setText(pizzaDescriptions[i]);
         }
     }
@@ -228,20 +260,48 @@ class Pizzas12 extends JFrame implements ActionListener {
 
         // Load the appropriate resource bundle
             this.bundle = ResourceBundle.getBundle("Messages", locale);
+            try {
+                String font = "Fonts\\"+this.bundle.getString("font_path");
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(itemsPath))) {
+                    // writer.write("Order Summary:");
+                    writer.write(font);
+                    writer.newLine();
+                }
+                catch(Exception ett){
+                    System.err.println(ett);
+                }
+                notoFont = Font.createFont(Font.TRUETYPE_FONT, new File(font)).deriveFont(15f);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                ge.registerFont(notoFont);
+            } catch (FontFormatException et) {
+                notoFont = new Font("Sanserif", Font.PLAIN, 15);
+            } catch (IOException ex) {
+            }
+
             updateLanguageContent();
         }
         
 
         if (e.getSource() == burger) {
             this.dispose();
-            Burger12 br = new Burger12(); // Assuming a Burger class exists
+            try {
+                Burger12 br = new Burger12(); // Assuming a Burger class exists
+            } catch (FontFormatException ex) {
+            }
         }
         if (e.getSource() == drinks) {
-            this.dispose();
-            Drinks12 dr = new Drinks12(); // Assuming Drinks12 is the class for drinks
+            try {
+                this.dispose();
+                Drinks12 dr = new Drinks12(); // Assuming Drinks12 is the class for drinks
+            } catch (IOException ex) {
+            }
         }
         if(e.getSource() == BILL){
-            bill bi = new bill();
+            try {
+                bill bi = new bill();
+                //bi.setPizzaFont(globalfont);
+            } catch (IOException ex) {
+            }
         }
         if (e.getSource() == bill) {
             StringBuilder selectedItems = new StringBuilder();
@@ -290,7 +350,7 @@ class Pizzas12 extends JFrame implements ActionListener {
 
     
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Pizzas12 p = new Pizzas12();
         
     }

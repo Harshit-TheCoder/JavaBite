@@ -20,10 +20,9 @@ class project extends JFrame implements ActionListener{
         
          JLabel label = new JLabel();
          label.setSize(500,700);
-         label.setBackground(Color.PINK);
          label.setOpaque(true);
    
-         intro1 = new JLabel("Burgerizza Haven");
+         intro1 = new JLabel("JavaBite");
          intro2 = new JLabel("Come and enjoy with us a delightful ");
          intro3 = new JLabel("symphony of flavors in every bite");
          intro1.setBounds(115,50,300,100);
@@ -39,15 +38,15 @@ class project extends JFrame implements ActionListener{
          this.add(label);
         
 
-         manager = new JButton("MANAGER");
-         customer = new JButton("CUSTOMER");
-         manager.setBounds(100,300,300,50);
+         // manager = new JButton("MANAGER");
+         customer = new JButton("ORDER");
+         //manager.setBounds(100,300,300,50);
          customer.setBounds(100,400,300,50);
-         manager.setFocusable(false);
+         //manager.setFocusable(false);
          customer.setFocusable(false);
-         manager.addActionListener(this);
+         //manager.addActionListener(this);
          customer.addActionListener(this);
-         label.add(manager);
+         //label.add(manager);
          label.add(customer);
          label.add(intro1);
          label.add(intro2);
